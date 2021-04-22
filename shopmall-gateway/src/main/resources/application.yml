@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: shopmall-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: product_route
+          uri: lb://shopmall-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+
+        - id: ware_route
+            uri: lb://shopmall-ware
+            predicates:
+              - Path=/api/ware/**
+            filters:
+              - RewritePath=/api/(?<segment>.*),/$\{segment}
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+
+
+server:
+  port: 7001
+

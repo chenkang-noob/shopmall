@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: shopmall-gateway
+  #${prefix}-${spring.profiles.active}.${file-extension}
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: bb059fc0-99ee-44e0-a1cf-faad79e4a5e0
+        group: shopmall-gateway
+        file-extension: yaml
+  profiles:
+    active: dev

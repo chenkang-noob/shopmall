@@ -1,11 +1,11 @@
 server:
-  port: 7000
+  port: 8000
 spring:
   application:
-    name: shopmall-product
+    name: shopmall-ware
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/shopmall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/shopmall_wms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     type: com.alibaba.druid.pool.DruidDataSource
     username: root
     password: 13875780121
@@ -26,5 +26,3 @@ mybatis-plus:
       id-type: auto
       logic-delete-value: 0
       logic-not-delete-value: 1
-
-
