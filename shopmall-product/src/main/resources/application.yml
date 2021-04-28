@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: shopmall-product
+
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/shopmall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
@@ -11,11 +13,16 @@ spring:
     password: 13875780121
 
 
+  redis:
+    host: 192.168.210.128
+    port: 6379
 
   cloud:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+
+
 
 
 
@@ -27,4 +34,8 @@ mybatis-plus:
       logic-delete-value: 0
       logic-not-delete-value: 1
 
+
+ribbon:
+  ReadTimeout: 5000
+  ConnectTimeout: 5000
 

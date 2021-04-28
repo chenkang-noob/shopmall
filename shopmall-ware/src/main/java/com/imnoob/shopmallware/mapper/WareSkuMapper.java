@@ -13,4 +13,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface WareSkuMapper extends BaseMapper<WareSku> {
 
+    public Long selectHasStcok(Long id);
+
 }

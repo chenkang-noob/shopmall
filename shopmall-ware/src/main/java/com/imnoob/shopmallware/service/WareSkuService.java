@@ -2,6 +2,9 @@ package com.imnoob.shopmallware.service;
 
 import com.imnoob.shopmallware.model.WareSku;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.imnoob.shopmallware.vo.SkuStockVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface WareSkuService extends IService<WareSku> {
 
+    List<SkuStockVo> gethasStock(List<Long> skuids);
 }

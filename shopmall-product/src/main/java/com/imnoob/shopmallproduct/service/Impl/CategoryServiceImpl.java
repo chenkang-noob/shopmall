@@ -4,6 +4,8 @@ import com.imnoob.shopmallproduct.mapper.CategoryMapper;
 import com.imnoob.shopmallproduct.model.Category;
 import com.imnoob.shopmallproduct.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,11 +13,20 @@ import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
+
+    private final static String categeoryKey = "categeoryKey";
+
     @Autowired
     CategoryMapper categoryMapper;
 
+    @Autowired
+    RedisTemplate<String,Object> redisTemplate;
+
 
     public List<Category> listWithTree(){
+
+        Object s = redisTemplate.opsForValue().get(categeoryKey);
+        if (s != null ) return  (List<Category>) s;
         List<Category> all = categoryMapper.selectList(null);
 
         List<Category> level1 = all.stream().filter(category -> category.getParentCid() == 0).collect(Collectors.toList());
@@ -29,6 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
             }
 
         }
+        redisTemplate.opsForValue().set(categeoryKey,level1);
         return level1;
     }
 

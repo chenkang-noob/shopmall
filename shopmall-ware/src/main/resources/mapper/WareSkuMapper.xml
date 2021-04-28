@@ -17,4 +17,9 @@
         id, sku_id, ware_id, stock, sku_name, stock_locked
     </sql>
 
+    <select id="selectHasStcok" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT SUM(stock - stock_locked) from
+        wms_ware_sku WHERE sku_id = #{id};
+    </select>
+
 </mapper>

@@ -49,6 +49,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public Brand getById(Long brandId) {
-        return null;
+
+        return brandMapper.selectById(brandId);
     }
 }

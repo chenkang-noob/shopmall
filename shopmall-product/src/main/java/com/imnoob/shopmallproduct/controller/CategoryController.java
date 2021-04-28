@@ -23,7 +23,7 @@ public class CategoryController {
      */
     @RequestMapping("/list/tree")
     public R list(){
-        System.out.println("---");
+
         List<Category> entities = categoryService.listWithTree();
         return R.ok().put("data", entities);
     }

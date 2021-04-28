@@ -1,15 +1,15 @@
-package com.imnoob.shopmallware;
+package com.imnoob.shopmallsearch;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @EnableDiscoveryClient
 @SpringBootApplication
-@MapperScan("com.imnoob.shopmallware.mapper")
-public class ShopmallWareApplication {
+public class ShopmallSearchApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(ShopmallWareApplication.class, args);
+        SpringApplication.run(ShopmallSearchApplication.class, args);
     }
+
 }
