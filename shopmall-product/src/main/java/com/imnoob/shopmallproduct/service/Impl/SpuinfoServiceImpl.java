@@ -5,16 +5,13 @@ import com.imnoob.shopmallcommon.to.SkuEsModel;
 import com.imnoob.shopmallcommon.utils.R;
 import com.imnoob.shopmallproduct.feign.SearchFeign;
 import com.imnoob.shopmallproduct.feign.WaveFeign;
-import com.imnoob.shopmallproduct.mapper.CategoryMapper;
-import com.imnoob.shopmallproduct.mapper.SkuInfoMapper;
-import com.imnoob.shopmallproduct.mapper.SpuInfoMapper;
-import com.imnoob.shopmallproduct.model.Brand;
-import com.imnoob.shopmallproduct.model.Category;
-import com.imnoob.shopmallproduct.model.SkuInfo;
-import com.imnoob.shopmallproduct.model.SpuInfo;
+import com.imnoob.shopmallproduct.mapper.*;
+import com.imnoob.shopmallproduct.model.*;
 import com.imnoob.shopmallproduct.service.BrandService;
 import com.imnoob.shopmallproduct.service.SpuinfoService;
+import com.imnoob.shopmallproduct.vo.SkuInfoVo;
 import com.imnoob.shopmallproduct.vo.SkuStockVo;
+import com.imnoob.shopmallproduct.vo.SpuInfoDetailVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +24,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class SpuinfoServiceImpl implements SpuinfoService {
+
+    @Resource
+    SpuInfoMapper spuInfoMapper;
 
     @Resource
     SkuInfoMapper skuInfoMapper;
@@ -42,6 +42,12 @@ public class SpuinfoServiceImpl implements SpuinfoService {
 
     @Resource
     SearchFeign searchFeign;
+
+    @Resource
+    ProductAttrValueMapper productAttrValueMapper;
+
+    @Resource
+    SkuSaleAttrValueMapper skuSaleAttrValueMapper;
 
 
 
@@ -91,5 +97,35 @@ public class SpuinfoServiceImpl implements SpuinfoService {
         //TODO 接口幂等性 异常处理
         //skuEsModels
         return searchFeign.upgoods(skuEsModels);
+    }
+
+    @Override
+    public SpuInfoDetailVo getDetailInfo(Long spuId) {
+        SpuInfoDetailVo info = new SpuInfoDetailVo();
+
+        //添加商品信息
+        SpuInfo skuInfo = spuInfoMapper.selectById(spuId);
+        info.setSpuInfo(skuInfo);
+
+        //添加属性信息；
+        List<ProductAttrValue> attrinfos = productAttrValueMapper.selectList(new QueryWrapper<ProductAttrValue>().eq("spu_id", spuId));
+        info.setGroupVos(attrinfos);
+
+        return info;
+    }
+
+    @Override
+    public List<SkuInfoVo> getSkuInfos(Long spuId) {
+        List<SkuInfoVo> res = new ArrayList<>();
+        List<SkuInfo> spus = skuInfoMapper.selectList(new QueryWrapper<SkuInfo>().eq("spu_id", spuId));
+        for (SkuInfo skuInfo : spus) {
+            SkuInfoVo skuInfoVo = new SkuInfoVo();
+            skuInfoVo.setSkuInfo(skuInfo);
+            List<SkuSaleAttrValue> sku_id = skuSaleAttrValueMapper.selectList(new QueryWrapper<SkuSaleAttrValue>().eq("sku_id", skuInfo.getSkuId()));
+            skuInfoVo.setAttrs(sku_id);
+            res.add(skuInfoVo);
+        }
+
+        return res;
     }
 }

@@ -13,11 +13,13 @@ spring:
 
 
         - id: ware_route
-            uri: lb://shopmall-ware
-            predicates:
-              - Path=/api/ware/**
-            filters:
-              - RewritePath=/api/(?<segment>.*),/$\{segment}
+          uri: lb://shopmall-ware
+          predicates:
+            - Path=/api/ware/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
@@ -25,5 +27,5 @@ spring:
 
 
 server:
-  port: 7001
+  port: 7010
 
