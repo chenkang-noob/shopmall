@@ -1,0 +1,47 @@
+server:
+  port: 7030
+spring:
+  application:
+    name: shopmall-member
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shopmall_ums?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    type: com.alibaba.druid.pool.DruidDataSource
+    username: root
+    password: 13875780121
+
+
+  redis:
+    host: 192.168.210.128
+    port: 6379
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+
+
+
+
+logging:
+  level:
+    com.imnoob.shopmallmember.mapper: debug
+
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+ribbon:
+  ReadTimeout: 5000
+  ConnectTimeout: 5000
+
+
+

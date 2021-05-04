@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * http://www.regular-expressions.info/modifiers.html
  *
  * A note on naming conventions: instance variables are prefixed with a "v"; global
- * constants are in all caps.
+ * properties are in all caps.
  *
  * Sample use:
  * String input = ...

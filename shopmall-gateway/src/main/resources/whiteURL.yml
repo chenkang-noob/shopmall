@@ -1,0 +1,8 @@
+
+
+gatewayfilter:
+  whiteURL:
+    - /login
+    - /register
+    - /tree/list
+    - /spuinfo

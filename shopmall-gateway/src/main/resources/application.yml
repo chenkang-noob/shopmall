@@ -19,6 +19,14 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
+        - id: auth_route
+          uri: lb://shopmall-auth
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+
 
     nacos:
       discovery:
@@ -29,3 +37,15 @@ spring:
 server:
   port: 7010
 
+
+ribbon:
+  ReadTimeout: 5000
+  ConnectTimeout: 5000
+
+gatewayfilter:
+  whitepath:
+    - /api/auth/login
+    - /api/auth/register
+    - /api/auth/sendSms
+    - /api/product/category/list/tree
+    - /api/spuinfo

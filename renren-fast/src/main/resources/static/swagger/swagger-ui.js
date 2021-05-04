@@ -2464,7 +2464,7 @@ window.Docs = {
                         ':(\\d{2})' + // seconds capture
                         '(?:(\\.\\d{1,}))?' + // milliseconds capture
                     ')?' +
-                '(' + // capture UTC offset component
+                '(' + // capture UTC offset filter
                     'Z|' + // UTC capture
                     '(?:' + // offset specifier +/-hours:minutes
                         '([-+])' + // sign capture
@@ -2523,7 +2523,7 @@ window.Docs = {
                 if (match) {
                     // parse months, days, hours, minutes, seconds, and milliseconds
                     // provide default values if necessary
-                    // parse the UTC offset component
+                    // parse the UTC offset filter
                     var year = $Number(match[1]),
                         month = $Number(match[2] || 1) - 1,
                         day = $Number(match[3] || 1) - 1,
@@ -9454,7 +9454,7 @@ function utf8ToBytes (string, units) {
   for (var i = 0; i < length; i++) {
     codePoint = string.charCodeAt(i)
 
-    // is surrogate component
+    // is surrogate filter
     if (codePoint > 0xD7FF && codePoint < 0xE000) {
       // last char was a lead
       if (!leadSurrogate) {
