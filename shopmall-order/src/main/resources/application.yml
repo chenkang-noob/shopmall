@@ -1,0 +1,49 @@
+server:
+  port: 7040
+spring:
+  application:
+    name: shopmall-order
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shopmall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    type: com.alibaba.druid.pool.DruidDataSource
+    username: root
+    password: 13875780121
+
+
+  redis:
+    host: 192.168.210.128
+    port: 6379
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+#  cache:
+#    type: redis
+#
+#    redis:
+#      key-prefix: CACHE_
+#      use-key-prefix: true
+#      cache-null-values: true
+
+
+
+
+
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+
+
+ribbon:
+  ReadTimeout: 5000
+  ConnectTimeout: 5000
+

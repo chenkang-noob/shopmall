@@ -2,6 +2,7 @@ package com.imnoob.shopmallauth.controller;
 
 import com.imnoob.shopmallauth.fegin.MemberFegin;
 import com.imnoob.shopmallauth.service.TokenService;
+import com.imnoob.shopmallauth.utils.IPUtils;
 import com.imnoob.shopmallauth.vo.LoginVo;
 import com.imnoob.shopmallauth.vo.RegisterVo;
 import com.imnoob.shopmallcommon.exception.BizCodeEnume;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -59,10 +61,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public R login(@Validated LoginVo loginVo, HttpServletResponse response){
+    public R login(@Validated LoginVo loginVo, HttpServletRequest request, HttpServletResponse response){
 
         AjaxResult<AdminToken> login = memberFegin.login(loginVo);
         AdminToken data = login.getData();
+        String ip = IPUtils.getIPAddr(request);
+        data.setIpAddr(ip);
         System.out.println(login);
         if (login.getCode() == HttpStatus.SC_OK){
             String s = tokenService.publishToken(login.getData());

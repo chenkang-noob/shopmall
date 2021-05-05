@@ -19,6 +19,7 @@ public class AdminToken implements Serializable {
     private String nickname;
 
     private Long loginTime;
+    private String ipAddr;
 
 
 

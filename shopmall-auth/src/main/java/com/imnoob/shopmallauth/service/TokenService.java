@@ -9,5 +9,5 @@ public interface TokenService {
     public void delToken(String token);
     public AdminToken parseToken(String token);
 
-    public Boolean checkToken(String token);
+    public Boolean checkToken(String token,String ip);
 }
