@@ -32,8 +32,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuMapper, WareSku> impl
             SkuStockVo skuStockVo = new SkuStockVo();
             skuStockVo.setSkuId(sku);
             Long stock = wareSkuMapper.selectHasStcok(sku);
-            if (stock == null) skuStockVo.setHasStock(false);
-            else if (stock > 0) skuStockVo.setHasStock(true);
+            skuStockVo.setStorageNum(stock);
             return skuStockVo;
         }).collect(Collectors.toList());
 

@@ -1,6 +1,7 @@
 package com.imnoob.shopmallorder.controller;
 
 import com.imnoob.shopmallcommon.utils.R;
+import com.imnoob.shopmallorder.service.ShopCartService;
 import com.imnoob.shopmallorder.vo.CartItem;
 import com.imnoob.shopmallorder.vo.ShopCartVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,32 +24,24 @@ public class ShopcartController {
      * 因为价格是实时变化的，不应该写死在redis中
      */
 
-    @Resource
-    RedisTemplate<String, Object> redisTemplate;
+   @Resource
+    ShopCartService shopCartService;
 
 
     @PostMapping("/addshop")
     public R addShop(Long userId, CartItem item){
 
-        CartItem cartItem = (CartItem) redisTemplate.opsForHash().get("shopcart::" + userId, item.getSkuId());
-        if (cartItem == null){
-            redisTemplate.opsForHash().put("shopcart::"+userId,item.getSkuId(),item);
-        }
-        CartItem tmp = (CartItem) redisTemplate.opsForHash().get("shopcart::" + userId, item.getSkuId());
-        System.out.println(tmp.getSkuId());
-        return R.ok();
+        ShopCartVo shopCartVo = shopCartService.addShop(userId, item);
+
+        return R.ok().put("shopcart",shopCartVo);
     }
 
     @GetMapping("/info")
-    public R ShopcartInfo(Long userId){
-        ArrayList<Object> list = new ArrayList<>();
-        List<Object> items = redisTemplate.opsForHash().values("shopcart::" + userId);
-        ShopCartVo shopCartVo = new ShopCartVo();
-        List<CartItem> items1 = shopCartVo.getItems();
-
-        for (Object item : items) {
-            items1.add((CartItem) item);
-        }
+    public R ShopcartInfo(Long userId,Long[] skuids){
+        ShopCartVo shopCartVo = null;
+        if (skuids == null) {
+            shopCartVo = shopCartService.shopcartInfo(userId);
+        }else shopCartVo  = shopCartService.shopcartInfo(userId,skuids);
 
         return R.ok().put("shopcart",shopCartVo);
     }

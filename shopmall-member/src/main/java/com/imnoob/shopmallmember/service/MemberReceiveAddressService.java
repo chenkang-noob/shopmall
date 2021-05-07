@@ -2,6 +2,9 @@ package com.imnoob.shopmallmember.service;
 
 import com.imnoob.shopmallmember.model.MemberReceiveAddress;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.imnoob.shopmallmember.vo.MemberAdressVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface MemberReceiveAddressService extends IService<MemberReceiveAddress> {
 
+    List<MemberAdressVo> getAddressInfo(Long memberId);
 }

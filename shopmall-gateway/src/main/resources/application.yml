@@ -26,7 +26,12 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
-
+        - id: order_route
+          uri: lb://shopmall-order
+          predicates:
+            - Path=/api/order/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
 
     nacos:
       discovery:

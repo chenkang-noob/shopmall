@@ -2,6 +2,7 @@ package com.imnoob.shopmallorder.service;
 
 import com.imnoob.shopmallorder.model.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.imnoob.shopmallorder.vo.OrderConfirmVo;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface OrderService extends IService<Order> {
 
+    Order createOrder(Long memberId, OrderConfirmVo orderinfo);
 }

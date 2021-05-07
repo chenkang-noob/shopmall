@@ -15,19 +15,12 @@ spring:
   redis:
     host: 192.168.210.128
     port: 6379
+    database: 1
 
   cloud:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-
-#  cache:
-#    type: redis
-#
-#    redis:
-#      key-prefix: CACHE_
-#      use-key-prefix: true
-#      cache-null-values: true
 
 
 
@@ -47,3 +40,5 @@ ribbon:
   ReadTimeout: 5000
   ConnectTimeout: 5000
 
+token:
+  tokenHeader: access_token

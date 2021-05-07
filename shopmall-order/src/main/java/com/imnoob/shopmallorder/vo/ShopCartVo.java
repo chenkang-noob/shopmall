@@ -1,18 +1,22 @@
 package com.imnoob.shopmallorder.vo;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Data
 public class ShopCartVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     private List<CartItem> items;
+
     private BigDecimal totalPrice;
     private Integer typeNum;
     private Integer totalNum;
