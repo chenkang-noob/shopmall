@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestControllerAdvice(basePackages = "com.atguigu.gulimall.product.controller")
+@RestControllerAdvice(basePackages = "com.imnoob.gulimallproduct.controller")
 public class AdviceHandler {
 
     @ExceptionHandler(value = CustomizeException.class)

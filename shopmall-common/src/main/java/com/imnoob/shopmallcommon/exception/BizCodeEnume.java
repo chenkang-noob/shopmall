@@ -19,7 +19,9 @@ public enum BizCodeEnume {
     UNKNOW_EXCEPTION(10000,"系统未知异常"),
     VAILD_EXCEPTION(10001,"参数格式校验失败"),
     SEARCH_EXCEPTION(10002,"搜索失败"),
-    SMS_EXCEPTION(10003,"短信发送过快，稍后再试");
+    SMS_EXCEPTION(10003,"短信发送过快，稍后再试"),
+    WARE_SHORTAGE(10004,"库存不足，锁定失败"),
+    CREATE_ORDER_ERROE(10004,"订单创建失败");
 
     private int code;
     private String msg;

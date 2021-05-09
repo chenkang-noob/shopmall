@@ -2,6 +2,7 @@ package com.imnoob.shopmallware.mapper;
 
 import com.imnoob.shopmallware.model.WareSku;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -14,5 +15,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface WareSkuMapper extends BaseMapper<WareSku> {
 
     public Long selectHasStcok(Long id);
+
+    public Integer lockStock(@Param("id") Long id, @Param("num") Integer num);
 
 }

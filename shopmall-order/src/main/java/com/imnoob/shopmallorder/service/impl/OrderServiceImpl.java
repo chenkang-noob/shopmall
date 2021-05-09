@@ -2,9 +2,12 @@ package com.imnoob.shopmallorder.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.imnoob.shopmallcommon.exception.BizCodeEnume;
+import com.imnoob.shopmallcommon.exception.CustomizeException;
 import com.imnoob.shopmallcommon.utils.AjaxResult;
 import com.imnoob.shopmallcommon.utils.R;
 import com.imnoob.shopmallorder.fegin.ProductFeign;
+import com.imnoob.shopmallorder.fegin.WareFeign;
 import com.imnoob.shopmallorder.mapper.OrderItemMapper;
 import com.imnoob.shopmallorder.model.Order;
 import com.imnoob.shopmallorder.mapper.OrderMapper;
@@ -12,6 +15,7 @@ import com.imnoob.shopmallorder.model.OrderItem;
 import com.imnoob.shopmallorder.service.OrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.imnoob.shopmallorder.vo.*;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -41,13 +46,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Resource
     OrderItemMapper orderItemMapper;
 
+    @Resource
+    WareFeign wareFeign;
+
+
+    @GlobalTransactional
     @Transactional
     @Override
     public Order createOrder(Long memberId, OrderConfirmVo orderinfo) {
 
         //TODO 锁定库存 分布式事务
-//        List<CartItem> orderItemVos = orderinfo.getOrderItemVos();
-//        orderItemVos.stream().map()
+        List<CartItem> orderItemVos = orderinfo.getOrderItemVos();
+        List<LockWareVo> list = orderItemVos.stream().map(item -> {
+            LockWareVo tmp = new LockWareVo();
+            tmp.setSkuId(item.getSkuId());
+            tmp.setNeedNum(item.getNum());
+            return tmp;
+        }).collect(Collectors.toList());
+
+        R r = wareFeign.lockStock(list);
+        if (r.getCode().equals(BizCodeEnume.WARE_SHORTAGE.getCode())){
+            throw new CustomizeException(BizCodeEnume.CREATE_ORDER_ERROE);
+        }
 
 
         //构造订单

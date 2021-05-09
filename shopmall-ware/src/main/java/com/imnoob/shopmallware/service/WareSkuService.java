@@ -2,6 +2,7 @@ package com.imnoob.shopmallware.service;
 
 import com.imnoob.shopmallware.model.WareSku;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.imnoob.shopmallware.vo.LockWareVo;
 import com.imnoob.shopmallware.vo.SkuStockVo;
 
 import java.util.List;
@@ -17,4 +18,6 @@ import java.util.List;
 public interface WareSkuService extends IService<WareSku> {
 
     List<SkuStockVo> gethasStock(List<Long> skuids);
+
+    Boolean lockStock(List<LockWareVo> list);
 }

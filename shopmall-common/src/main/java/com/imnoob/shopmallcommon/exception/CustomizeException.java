@@ -1,6 +1,6 @@
 package com.imnoob.shopmallcommon.exception;
 
-public class CustomizeException extends Exception {
+public class CustomizeException extends RuntimeException {
     private Integer code;
 
     public CustomizeException(Integer code,String msg) {

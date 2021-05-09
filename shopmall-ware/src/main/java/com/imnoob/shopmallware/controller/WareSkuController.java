@@ -1,7 +1,9 @@
 package com.imnoob.shopmallware.controller;
 
 
+import com.imnoob.shopmallcommon.utils.R;
 import com.imnoob.shopmallware.service.WareSkuService;
+import com.imnoob.shopmallware.vo.LockWareVo;
 import com.imnoob.shopmallware.vo.SkuStockVo;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +35,13 @@ public class WareSkuController {
 
         List<SkuStockVo> res = wareSkuService.gethasStock(skuids);
         return  res;
+    }
+
+    @PostMapping("/LockStock")
+    public R lockStock(@RequestBody List<LockWareVo> list){
+        Boolean res = wareSkuService.lockStock(list);
+        if (res) return R.ok();
+        else return R.error("库存锁定失败");
     }
 
 
