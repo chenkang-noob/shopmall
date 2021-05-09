@@ -15,4 +15,6 @@ import com.imnoob.shopmallorder.vo.OrderConfirmVo;
 public interface OrderService extends IService<Order> {
 
     Order createOrder(Long memberId, OrderConfirmVo orderinfo);
+
+    Order queryByOrderSn(String orderSn);
 }

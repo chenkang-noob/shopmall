@@ -9,11 +9,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.imnoob.shopmallware.vo.LockWareVo;
 import com.imnoob.shopmallware.vo.SkuStockVo;
 import io.seata.spring.annotation.GlobalTransactional;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -27,8 +32,17 @@ import java.util.stream.Collectors;
 @Service
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuMapper, WareSku> implements WareSkuService {
 
+    private static final String LOCK_PREFIX = "lockWare:";
+    private static final String STATUS_PREFIX = "orderStatus:";
+
     @Resource
     WareSkuMapper wareSkuMapper;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    RedisTemplate<String,Object> redisTemplate;
 
     @Override
     public List<SkuStockVo> gethasStock(List<Long> skuids) {
@@ -45,18 +59,44 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuMapper, WareSku> impl
 
     }
 
-    @GlobalTransactional
     @Transactional
     @Override
     public Boolean lockStock(List<LockWareVo> list) {
+
         for (LockWareVo item : list) {
             Integer integer = wareSkuMapper.lockStock(item.getSkuId(), item.getNeedNum());
             if (integer == 0) {
-                //库存不足
+                //库存不足 回滚
                 throw new CustomizeException(BizCodeEnume.WARE_SHORTAGE);
+            }else {
+                //锁库存成功 向MQ发送消息
+                System.out.println("锁库存成功  发送MQ 消息");
+                rabbitTemplate.convertAndSend("stock-event-exchange","delay.route",item);
             }
         }
+        if (list != null && list.size() > 0){
+            String orderSn = list.get(0).getOrderSn();
+            redisTemplate.opsForList().leftPushAll(LOCK_PREFIX + orderSn, list);
+            redisTemplate.expire(LOCK_PREFIX + orderSn, 1, TimeUnit.DAYS);
+        }
+
         return true;
+
+    }
+
+    @Override
+    public void unlockWare(Long skuId, Integer needNum) {
+        wareSkuMapper.unlockWare(skuId, needNum);
+        return ;
+    }
+
+    @Transactional
+    @Override
+    public void unlockWare(ArrayList<LockWareVo> lockWareVos) {
+
+        for (LockWareVo item : lockWareVos) {
+             unlockWare(item.getSkuId(), item.getNeedNum());
+        }
 
     }
 }

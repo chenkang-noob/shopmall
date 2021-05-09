@@ -18,4 +18,5 @@ public interface WareSkuMapper extends BaseMapper<WareSku> {
 
     public Integer lockStock(@Param("id") Long id, @Param("num") Integer num);
 
+    Integer unlockWare(@Param("id") Long skuId,  @Param("num") Integer needNum);
 }

@@ -31,4 +31,12 @@
             WHERE sku_id = #{id} and stock >= #{num}
     </update>
 
+    <update id="unlockWare">
+        UPDATE wms_ware_sku
+        SET
+            stock = stock + #{num},
+            stock_locked = stock_locked - #{num}
+            WHERE sku_id = #{id}
+    </update>
+
 </mapper>

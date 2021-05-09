@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.imnoob.shopmallware.vo.LockWareVo;
 import com.imnoob.shopmallware.vo.SkuStockVo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,4 +21,8 @@ public interface WareSkuService extends IService<WareSku> {
     List<SkuStockVo> gethasStock(List<Long> skuids);
 
     Boolean lockStock(List<LockWareVo> list);
+
+    void unlockWare(Long skuId, Integer needNum);
+
+    void unlockWare(ArrayList<LockWareVo> lockWareVos);
 }

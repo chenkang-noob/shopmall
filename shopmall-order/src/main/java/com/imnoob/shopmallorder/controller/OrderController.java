@@ -13,12 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
@@ -95,6 +92,12 @@ public class OrderController {
         }
 
         return R.ok().put("orderInfo",order);
+    }
+
+    @GetMapping("/info/orderSn")
+    public R queryOrderByOrderSn(@RequestParam("orderSn") String orderSn){
+        Order order = orderService.queryByOrderSn(orderSn);
+        return R.ok().put("orderInfo", order);
     }
 
 }

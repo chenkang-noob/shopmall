@@ -21,12 +21,16 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
 
 
 
-
-
-
+# mybatis-plug
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
   global-config:
@@ -35,7 +39,7 @@ mybatis-plus:
       logic-delete-value: 0
       logic-not-delete-value: 1
 
-
+# ribbon
 ribbon:
   ReadTimeout: 5000
   ConnectTimeout: 5000
@@ -43,9 +47,9 @@ ribbon:
 token:
   tokenHeader: access_token
 
-
+# seata
 seata:
-  enabled: true
+  enabled: false
   enable-auto-data-source-proxy: true
   tx-service-group: my_test_tx_group
   registry:
@@ -70,3 +74,4 @@ seata:
   client:
     rm:
       report-success-enable: false
+

@@ -2,6 +2,7 @@ package com.imnoob.shopmallorder.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.imnoob.shopmallcommon.exception.BizCodeEnume;
 import com.imnoob.shopmallcommon.exception.CustomizeException;
 import com.imnoob.shopmallcommon.utils.AjaxResult;
@@ -16,6 +17,8 @@ import com.imnoob.shopmallorder.service.OrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.imnoob.shopmallorder.vo.*;
 import io.seata.spring.annotation.GlobalTransactional;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,11 +52,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Resource
     WareFeign wareFeign;
 
+    @Resource
+    RabbitTemplate rabbitTemplate;
 
-    @GlobalTransactional
+    //TODO 高并发下不适用分布式事务， 降低一致性要求 使用最终一致性的策略
+//    @GlobalTransactional
     @Transactional
     @Override
     public Order createOrder(Long memberId, OrderConfirmVo orderinfo) {
+
+        //构造订单
+        Order order = new Order();
+        order.setMemberId(memberId);
+        order.setCreateTime(new Date(System.currentTimeMillis()));
+        order.setStatus(1);
+        order.setOrderSn(UUID.randomUUID().toString());
+
 
         //TODO 锁定库存 分布式事务
         List<CartItem> orderItemVos = orderinfo.getOrderItemVos();
@@ -61,34 +75,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             LockWareVo tmp = new LockWareVo();
             tmp.setSkuId(item.getSkuId());
             tmp.setNeedNum(item.getNum());
+            tmp.setOrderSn(order.getOrderSn());
             return tmp;
         }).collect(Collectors.toList());
-
         R r = wareFeign.lockStock(list);
         if (r.getCode().equals(BizCodeEnume.WARE_SHORTAGE.getCode())){
             throw new CustomizeException(BizCodeEnume.CREATE_ORDER_ERROE);
         }
 
 
-        //构造订单
-        Order order = new Order();
-        order.setMemberId(memberId);
-        order.setCreateTime(new Date(System.currentTimeMillis()));
-        order.setStatus(0);
-        order.setOrderSn(UUID.randomUUID().toString());
         MemberAddressVo memberAddressVo = orderinfo.getAddressVoList().get(0);
         BeanUtils.copyProperties(order, memberAddressVo);
-
-
         this.baseMapper.insert(order);
+
 
         //构造订单项
         buildorderItems(order,orderinfo);
+        //发送消息
+        OrderVo orderVo = new OrderVo();
+        BeanUtils.copyProperties(order,orderVo);
+
+        try {
+            rabbitTemplate.convertAndSend("order-event-exchange","order.delay.route",orderVo);
+        } catch (AmqpException e) {
+            //消息发送失败 做好日志记录
+            e.printStackTrace();
+        }
 
         return order;
 
     }
 
+    //创建每一个商品的 明细
     @Transactional
     public List<OrderItem> buildorderItems(Order order, OrderConfirmVo orderinfo) {
         List<CartItem> orderItemVos = orderinfo.getOrderItemVos();
@@ -124,6 +142,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         return orderItems;
+    }
+
+    //根据订单号查询 订单信息
+    public Order queryByOrderSn(String orderSn){
+        return this.baseMapper.selectOne(new QueryWrapper<Order>().eq("order_sn", orderSn));
     }
 
 }
