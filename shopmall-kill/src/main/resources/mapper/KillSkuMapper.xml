@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imnoob.shopmallkill.mapper.KillSkuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.imnoob.shopmallkill.model.KillSku">
+        <id column="id" property="id" />
+        <result column="sku_id" property="skuId" />
+        <result column="task_id" property="taskId" />
+        <result column="sku_name" property="skuName" />
+        <result column="stock" property="stock" />
+        <result column="orign_price" property="orignPrice" />
+        <result column="kill_price" property="killPrice" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sku_id, task_id, sku_name, stock, orign_price, kill_price
+    </sql>
+
+</mapper>

@@ -1,5 +1,4 @@
-package com.imnoob.shopmallorder;
-
+package com.imnoob.shopmallkill;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -11,18 +10,18 @@ import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 
-public class MybatisGenerator {
+public class MyAutoGenerator {
 
     public static void main(String[] args) {
-        //1. 全局配置
+//        1. 全局配置
 //        GlobalConfig config = new GlobalConfig();
-//        // 是否支持AR模式
+        // 是否支持AR模式
 //        config.setActiveRecord(true)
 //                // 作者
 //                .setAuthor("chenkang")
 //                // 生成路径，最好使用绝对路径，window路径是不一样的
 //                //TODO  TODO  TODO  TODO
-//                .setOutputDir("G:\\workspace\\shopmall\\shopmall-order\\src\\main\\java")
+//                .setOutputDir("G:\\workspace\\shopmall\\shopmall-kill\\src\\main\\java")
 //                // 文件覆盖
 //                .setFileOverride(true)
 //                // 主键策略
@@ -45,7 +44,7 @@ public class MybatisGenerator {
 //                //注意，看数据库版本，版本高是 com.mysql.cj.jdbc.Driver
 //                .setDriverName("com.mysql.cj.jdbc.Driver")
 //                //TODO  TODO  TODO  TODO
-//                .setUrl("jdbc:mysql://localhost:3306/shopmall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai")
+//                .setUrl("jdbc:mysql://localhost:3306/shopmall_sms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai")
 //                .setUsername("root")
 //                .setPassword("13875780121");
 //
@@ -65,13 +64,13 @@ public class MybatisGenerator {
 //                // 生成的表, 支持多表一起生成，以数组形式填写
 //                //TODO  TODO  TODO  TODO 两个方式，直接写，或者使用命令行输入
 //                //方式 1
-//                .setTablePrefix("oms_")
-//                .setInclude("oms_order","oms_order_item","oms_order_operate_history","oms_order_return_apply","oms_order_return_reason","oms_order_setting","oms_payment_info","oms_refund_info");
+////                .setTablePrefix("sms_")
+//                .setInclude("kill_sku","kill_task");
 //
 //
 //        //4. 包名策略配置
 //        PackageConfig pkConfig = new PackageConfig();
-//        pkConfig.setParent("com.imnoob.shopmallorder")
+//        pkConfig.setParent("com.imnoob.shopmallkill")
 //                .setMapper("mapper")
 //                .setService("service")
 //                .setController("controller")

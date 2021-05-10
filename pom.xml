@@ -20,6 +20,7 @@
     <module>shopmall-search</module>
     <module>shopmall-gateway</module>
     <module>shopmall-auth</module>
+    <module>shopmall-kill</module>
   </modules>
 
   <name>shopmall</name>
