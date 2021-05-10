@@ -27,6 +27,16 @@ spring:
     username: guest
     password: guest
     virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual #手动确认消息
+
+
+      direct:
+        acknowledge-mode: manual
+        retry:
+          enabled: true
+
 
 
 
@@ -47,31 +57,34 @@ ribbon:
 token:
   tokenHeader: access_token
 
+logging:
+  level:
+    com.alibaba.nacos: WARN
 # seata
-seata:
-  enabled: false
-  enable-auto-data-source-proxy: true
-  tx-service-group: my_test_tx_group
-  registry:
-    type: nacos
-    nacos:
-      application: seata-server
-      server-addr: 127.0.0.1:8848
-      username: nacos
-      password: nacos
-  config:
-    type: nacos
-    nacos:
-      server-addr: 127.0.0.1:8848
-      group: SEATA_GROUP
-      username: nacos
-      password: nacos
-      namespace: b4772525-5180-45fd-8433-45c5157125cf
-  service:
-    vgroup-mapping:
-      my_test_tx_group: default
-    disable-global-transaction: false
-  client:
-    rm:
-      report-success-enable: false
+#seata:
+#  enabled: false
+#  enable-auto-data-source-proxy: true
+#  tx-service-group: my_test_tx_group
+#  registry:
+#    type: nacos
+#    nacos:
+#      application: seata-server
+#      server-addr: 127.0.0.1:8848
+#      username: nacos
+#      password: nacos
+#  config:
+#    type: nacos
+#    nacos:
+#      server-addr: 127.0.0.1:8848
+#      group: SEATA_GROUP
+#      username: nacos
+#      password: nacos
+#      namespace: b4772525-5180-45fd-8433-45c5157125cf
+#  service:
+#    vgroup-mapping:
+#      my_test_tx_group: default
+#    disable-global-transaction: false
+#  client:
+#    rm:
+#      report-success-enable: false
 

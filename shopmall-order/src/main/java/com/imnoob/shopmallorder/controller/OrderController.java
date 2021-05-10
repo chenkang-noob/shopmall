@@ -1,6 +1,8 @@
 package com.imnoob.shopmallorder.controller;
 
 
+import com.imnoob.shopmallcommon.exception.BizCodeEnume;
+import com.imnoob.shopmallcommon.exception.CustomizeException;
 import com.imnoob.shopmallcommon.utils.R;
 import com.imnoob.shopmallorder.fegin.WareFeign;
 import com.imnoob.shopmallorder.model.Order;
@@ -84,8 +86,8 @@ public class OrderController {
         Long res = redisTemplate.execute(new DefaultRedisScript<Long>(luaScript, Long.class), Arrays.asList(key), token);
         Order order = null;
         if (res == 0){
-            //验证失败 重复提交  获取长时间为确认提交订单
-            return R.error("请勿重复提交");
+            //验证失败 重复提交  或则长时间为确认提交订单
+            return R.error("请勿重复订单提交");
         }else{
         //创建订单
             order = orderService.createOrder(memberId, orderConfirmVo);
@@ -94,8 +96,19 @@ public class OrderController {
         return R.ok().put("orderInfo",order);
     }
 
+    @PostMapping("/payOrder")
+    public R payOrder(String orderSn){
+        Integer res = orderService.payOrder(orderSn);
+        if (res == 0){
+            throw new CustomizeException(BizCodeEnume.PAY_ERROE);
+        }else{
+            return R.ok("支付成功");
+        }
+
+    }
+
     @GetMapping("/info/orderSn")
-    public R queryOrderByOrderSn(@RequestParam("orderSn") String orderSn){
+    public R queryOrderByOrderSn(@RequestParam("orderSn")String orderSn){
         Order order = orderService.queryByOrderSn(orderSn);
         return R.ok().put("orderInfo", order);
     }

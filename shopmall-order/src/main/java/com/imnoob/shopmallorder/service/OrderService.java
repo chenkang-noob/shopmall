@@ -17,4 +17,9 @@ public interface OrderService extends IService<Order> {
     Order createOrder(Long memberId, OrderConfirmVo orderinfo);
 
     Order queryByOrderSn(String orderSn);
+
+    Integer payOrder(String orderSn);
+    Integer expiredOrder(String orderSn);
+
+
 }

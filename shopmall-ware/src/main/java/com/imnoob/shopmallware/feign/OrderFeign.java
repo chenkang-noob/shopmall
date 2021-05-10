@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface OrderFeign {
 
     @GetMapping("/order/info/orderSn")
-    R queryOrderByOrderSn(@RequestParam("orderSn") String orderSn);
+    public R queryOrderByOrderSn(@RequestParam("orderSn")String orderSn);
 }

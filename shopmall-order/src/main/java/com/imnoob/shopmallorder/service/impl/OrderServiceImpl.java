@@ -3,10 +3,12 @@ package com.imnoob.shopmallorder.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.imnoob.shopmallcommon.exception.BizCodeEnume;
 import com.imnoob.shopmallcommon.exception.CustomizeException;
 import com.imnoob.shopmallcommon.utils.AjaxResult;
 import com.imnoob.shopmallcommon.utils.R;
+import com.imnoob.shopmallcommon.vo.rabbitVo.OrderVo;
 import com.imnoob.shopmallorder.fegin.ProductFeign;
 import com.imnoob.shopmallorder.fegin.WareFeign;
 import com.imnoob.shopmallorder.mapper.OrderItemMapper;
@@ -16,7 +18,6 @@ import com.imnoob.shopmallorder.model.OrderItem;
 import com.imnoob.shopmallorder.service.OrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.imnoob.shopmallorder.vo.*;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
@@ -55,6 +56,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Resource
     RabbitTemplate rabbitTemplate;
 
+    @Resource
+    OrderMapper orderMapper;
+
     //TODO 高并发下不适用分布式事务， 降低一致性要求 使用最终一致性的策略
 //    @GlobalTransactional
     @Transactional
@@ -66,7 +70,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setMemberId(memberId);
         order.setCreateTime(new Date(System.currentTimeMillis()));
         order.setStatus(1);
-        order.setOrderSn(UUID.randomUUID().toString());
+        order.setOrderSn(UUID.randomUUID().toString().replace("-",""));
 
 
         //TODO 锁定库存 分布式事务
@@ -91,10 +95,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         //构造订单项
         buildorderItems(order,orderinfo);
+
         //发送消息
         OrderVo orderVo = new OrderVo();
-        BeanUtils.copyProperties(order,orderVo);
-
+        orderVo.setCreateTime(order.getCreateTime());
+        orderVo.setId(order.getId());
+        orderVo.setStatus(order.getStatus());
+        orderVo.setOrderSn(order.getOrderSn());
         try {
             rabbitTemplate.convertAndSend("order-event-exchange","order.delay.route",orderVo);
         } catch (AmqpException e) {
@@ -147,6 +154,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     //根据订单号查询 订单信息
     public Order queryByOrderSn(String orderSn){
         return this.baseMapper.selectOne(new QueryWrapper<Order>().eq("order_sn", orderSn));
+    }
+
+    @Override
+    public Integer payOrder(String orderSn) {
+        Integer integer = orderMapper.payByOrderSn(orderSn);
+        return integer;
+    }
+
+    public Integer expiredOrder(String orderSn){
+        return orderMapper.expiredOrder(orderSn);
     }
 
 }

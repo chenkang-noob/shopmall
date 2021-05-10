@@ -8,7 +8,7 @@ import com.imnoob.shopmallware.service.WareSkuService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.imnoob.shopmallware.vo.LockWareVo;
 import com.imnoob.shopmallware.vo.SkuStockVo;
-import io.seata.spring.annotation.GlobalTransactional;
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -74,11 +74,11 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuMapper, WareSku> impl
                 rabbitTemplate.convertAndSend("stock-event-exchange","delay.route",item);
             }
         }
-        if (list != null && list.size() > 0){
-            String orderSn = list.get(0).getOrderSn();
-            redisTemplate.opsForList().leftPushAll(LOCK_PREFIX + orderSn, list);
-            redisTemplate.expire(LOCK_PREFIX + orderSn, 1, TimeUnit.DAYS);
+        String orderSn = list.get(0).getOrderSn();
+        for (LockWareVo item : list) {
+            redisTemplate.opsForList().leftPush(LOCK_PREFIX + orderSn, item);
         }
+        redisTemplate.expire(LOCK_PREFIX + orderSn, 1, TimeUnit.DAYS);
 
         return true;
 

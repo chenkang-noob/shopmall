@@ -1,9 +1,10 @@
 package com.imnoob.shopmallorder.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.Exchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.support.converter.ClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,10 @@ public class RabbitConfig {
         return new Jackson2JsonMessageConverter();
     }
 
+
+
+
+
     //声明主题发布交换机
     @Bean
     public Exchange wareRollbackExchange(){
@@ -32,13 +37,13 @@ public class RabbitConfig {
         Map<String, Object> argsmap = new HashMap<>();
         argsmap.put("x-message-ttl", 60*1000);
         argsmap.put("x-dead-letter-exchange", "order-event-exchange");
-        argsmap.put("x-dead-letter-routing-key", "checkOrder.route");
+        argsmap.put("x-dead-letter-routing-key", "order.deal.route");
         return  new Queue("order.delay.queue",true,false,false,argsmap);
     }
 
     //处理队列
     @Bean
-    public Queue stockReleaseQueue(){
+    public Queue dealQueue(){
         return  new Queue("order.deal.queue",true,false,false,null);
     }
 

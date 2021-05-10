@@ -1,18 +1,16 @@
 package com.imnoob.shopmallorder.listener;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-import com.imnoob.shopmallcommon.utils.R;
+import com.imnoob.shopmallcommon.vo.rabbitVo.OrderVo;
 import com.imnoob.shopmallorder.model.Order;
 import com.imnoob.shopmallorder.service.OrderService;
-import com.imnoob.shopmallorder.vo.OrderVo;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -31,16 +29,25 @@ public class MQlistener {
 
 
     @RabbitHandler
-    public void releaseStock(Message message, OrderVo orderVo ,Channel channel){
+    public void dealExpireOrder(Message message, OrderVo orderVo , Channel channel){
         //查询订单，如果订单支付成功 则查询库存 看库存的消息是否处理过 处理了则回滚，回滚则补偿
 
         Order order = orderService.queryByOrderSn(orderVo.getOrderSn());
         if (order != null){
             if  (order.getStatus() == 1){
+                System.out.println("超时未支付");
                 order.setStatus(3);
-                orderService.updateById(order);
+                //TODO 幂等修改状态
+                Integer integer = orderService.expiredOrder(order.getOrderSn());
             }
-            rabbitTemplate.convertAndSend("stock-event-exchange","release.route",order);
+            OrderVo tmp = new OrderVo();
+            tmp.setCreateTime(order.getCreateTime());
+            tmp.setId(order.getId());
+            tmp.setStatus(order.getStatus());
+            tmp.setOrderSn(order.getOrderSn());
+
+            System.out.println("发送消息");
+            rabbitTemplate.convertAndSend("stock-event-exchange","release.route",tmp);
             try {
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
             } catch (IOException e) {

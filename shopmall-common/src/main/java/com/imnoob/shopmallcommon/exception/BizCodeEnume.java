@@ -21,7 +21,8 @@ public enum BizCodeEnume {
     SEARCH_EXCEPTION(10002,"搜索失败"),
     SMS_EXCEPTION(10003,"短信发送过快，稍后再试"),
     WARE_SHORTAGE(10004,"库存不足，锁定失败"),
-    CREATE_ORDER_ERROE(10004,"订单创建失败");
+    CREATE_ORDER_ERROE(10004,"订单创建失败"),
+    PAY_ERROE(10004,"支付订单失败");
 
     private int code;
     private String msg;
