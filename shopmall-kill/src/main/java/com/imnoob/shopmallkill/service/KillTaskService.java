@@ -2,6 +2,7 @@ package com.imnoob.shopmallkill.service;
 
 import com.imnoob.shopmallkill.model.KillTask;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.imnoob.shopmallkill.vo.TaskDetail;
 
 import java.util.List;
 
@@ -16,4 +17,8 @@ import java.util.List;
 public interface KillTaskService extends IService<KillTask> {
 
     List<KillTask> selectTask(long timestamp, long timestamp2);
+
+    List<KillTask> getInfoByTime(Long start, Long end);
+
+    TaskDetail getDetailInfo(Long id);
 }

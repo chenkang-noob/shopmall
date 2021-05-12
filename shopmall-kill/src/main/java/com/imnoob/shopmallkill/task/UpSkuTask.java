@@ -51,7 +51,7 @@ public class UpSkuTask {
             RLock lock = redissonClient.getLock("taskLock:" + killTask.getId());
             try {
                 //设置超时让更多的 定时任务同时运行
-                boolean b = lock.tryLock(5, TimeUnit.SECONDS);
+                boolean b = lock.tryLock(2, TimeUnit.SECONDS);
                 if (b){
                     taskUpService.upTask(killTask.getId());
                 }
