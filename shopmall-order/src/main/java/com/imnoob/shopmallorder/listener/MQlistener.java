@@ -63,29 +63,6 @@ public class MQlistener {
         //如果订单未支付 则通知库存呢队列 释放库存
     }
 
-    @RabbitHandler
-    public void dealKillOrder(Message message, KillOrderTo killOrderTo,Channel channel){
 
-        Order order = orderService.createOrder(killOrderTo);
-        if (order != null){
-
-
-            try {
-                OrderTo orderTo = new OrderTo();
-                orderTo.setCreateTime(order.getCreateTime());
-                orderTo.setId(order.getId());
-                orderTo.setStatus(order.getStatus());
-                orderTo.setOrderSn(order.getOrderSn());
-
-                rabbitTemplate.convertAndSend("order-event-exchange","order.delay.route", orderTo);
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
-            } catch (IOException e) {
-                System.out.println("消息发送错误");
-                e.printStackTrace();
-            }
-        }
-
-
-    }
 
 }

@@ -7,6 +7,8 @@ import com.imnoob.shopmallkill.model.KillSku;
 import com.imnoob.shopmallkill.model.KillTask;
 import com.imnoob.shopmallkill.service.TaskUpService;
 import com.imnoob.shopmallkill.to.SkuTo;
+import org.redisson.api.RSemaphore;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,6 +31,9 @@ public class TaskUpServiceImpl implements TaskUpService {
 
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    RedissonClient redissonClient;
 
 //    TODO 常量的抽取
     private final static String SKU_KEY_PREFIX = "sku:";                   //信号量
@@ -71,7 +76,9 @@ public class TaskUpServiceImpl implements TaskUpService {
 
         //存储 秒杀的信息的信号量
         for (SkuTo item : items) {
-            redisTemplate.opsForValue().set(SKU_KEY_PREFIX+item.getRandKey(),item.getStock());
+            String key = item.getRandKey();
+            RSemaphore semaphore = redissonClient.getSemaphore(SKU_KEY_PREFIX + key);
+            semaphore.trySetPermits(item.getStock());
         }
     }
 }

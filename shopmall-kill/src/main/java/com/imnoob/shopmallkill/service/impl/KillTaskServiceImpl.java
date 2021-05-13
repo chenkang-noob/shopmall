@@ -115,6 +115,7 @@ public class KillTaskServiceImpl extends ServiceImpl<KillTaskMapper, KillTask> i
 
         //凭借随机码扣减
         RSemaphore semaphore = redissonClient.getSemaphore(SKU_KEY_PREFIX + key);
+
         boolean b = semaphore.tryAcquire(num);
         if (b){
             SkuTo o1 = (SkuTo) redisTemplate.opsForHash().get(SKU_INFO_KEY_PREFIX + taskid, skuid+"");

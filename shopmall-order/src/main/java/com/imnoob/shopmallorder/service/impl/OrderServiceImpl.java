@@ -124,7 +124,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setMemberId(killOrderTo.getMemberId());
         order.setCreateTime(new java.util.Date(System.currentTimeMillis()));
         order.setTotalAmount(killOrderTo.getKillPrice().multiply(new BigDecimal(killOrderTo.getNum())));
-
+        order.setStatus(1);
 
         //....其他属性赋值 忽略
         orderMapper.insert(order);
