@@ -57,4 +57,36 @@ public class RabbitConfig {
     public Binding BindingReleaseQueue(){
         return new Binding("order.deal.queue", Binding.DestinationType.QUEUE,"order-event-exchange","order.deal.route",null);
     }
+
+
+    /**
+     * 秒杀相关队列
+     */
+    //一个队列接收消息 生成订单
+    // 一个队列作为延迟队列
+    // 一个队列支付检查 回滚操作
+
+    //声明主题发布交换机
+    @Bean
+    public Exchange killRollbackExchange(){
+        return  new TopicExchange("killorder-event-exchange",true,false);
+    }
+
+
+    //处理队列
+    @Bean
+    public Queue killdealQueue(){
+
+        return  new Queue("killorder.deal.queue",true,false,false,null);
+    }
+
+
+//    绑定订单 处理队列
+    @Bean
+    public Binding BindingkilldealQueue(){
+        return new Binding("killorder.deal.queue", Binding.DestinationType.QUEUE,"killorder-event-exchange","killorder.deal.route",null);
+    }
+
+
+
 }

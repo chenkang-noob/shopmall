@@ -1,5 +1,6 @@
 package com.imnoob.shopmallorder.service;
 
+import com.imnoob.shopmallcommon.vo.rabbitTo.KillOrderTo;
 import com.imnoob.shopmallorder.model.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.imnoob.shopmallorder.vo.OrderConfirmVo;
@@ -20,6 +21,7 @@ public interface OrderService extends IService<Order> {
 
     Integer payOrder(String orderSn);
     Integer expiredOrder(String orderSn);
+    Order createOrder(KillOrderTo killOrderTo);
 
 
 }

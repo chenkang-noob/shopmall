@@ -3,7 +3,7 @@ package com.imnoob.shopmallware.listener;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.imnoob.shopmallcommon.utils.R;
-import com.imnoob.shopmallcommon.vo.rabbitVo.OrderVo;
+import com.imnoob.shopmallcommon.vo.rabbitTo.OrderTo;
 import com.imnoob.shopmallware.feign.OrderFeign;
 import com.imnoob.shopmallware.service.WareSkuService;
 import com.imnoob.shopmallware.vo.LockWareVo;
@@ -78,18 +78,18 @@ public class MqHandler {
 
     //下面的监听 用于处理 订单已经创建 但是用户取消支付 或则超时取消订单时  库存锁定的回滚
     @RabbitHandler
-    public void releaseStock(Message message, OrderVo vo, Channel channel) {
+    public void releaseStock(Message message, OrderTo vo, Channel channel) {
 
         R r = orderFeign.queryOrderByOrderSn(vo.getOrderSn());
         Object orderInfo = r.get("orderInfo");
-        OrderVo orderVo = JSON.parseObject(JSON.toJSONString(orderInfo), new TypeReference<OrderVo>() {
+        OrderTo orderTo = JSON.parseObject(JSON.toJSONString(orderInfo), new TypeReference<OrderTo>() {
         });
 
         if (r.getCode() == 0) {
-            if (orderVo.getStatus() != 2) {
+            if (orderTo.getStatus() != 2) {
                 //未支付  回滚
                 System.out.println("订单未支付情况回滚");
-                List<Object> items = redisTemplate.opsForList().range(LOCK_PREFIX + orderVo.getOrderSn(), 0, -1);
+                List<Object> items = redisTemplate.opsForList().range(LOCK_PREFIX + orderTo.getOrderSn(), 0, -1);
                 ArrayList<LockWareVo> lockWareVos = new ArrayList<>();
                 for (Object item : items) {
                     if (item instanceof LockWareVo) lockWareVos.add((LockWareVo) item);

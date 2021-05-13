@@ -31,9 +31,9 @@ public class TaskUpServiceImpl implements TaskUpService {
     RedisTemplate<String, Object> redisTemplate;
 
 //    TODO 常量的抽取
-    private final static String SKU_KEY_PREFIX = "sku:";
-    private final static String SKU_INFO_KEY_PREFIX = "skuInfo:";
-    private final static String KILL_TASK_KEY_PREFIX = "KillTask:";
+    private final static String SKU_KEY_PREFIX = "sku:";                   //信号量
+    private final static String SKU_INFO_KEY_PREFIX = "skuInfo:";         //hashmap 信息
+    private final static String KILL_TASK_KEY_PREFIX = "KillTask:";       //秒杀任务 信息
 
 
     @Override
@@ -60,7 +60,7 @@ public class TaskUpServiceImpl implements TaskUpService {
             BeanUtils.copyProperties(item, skuTo);
             String rondomKey = UUID.randomUUID().toString().replace("-", "");
             skuTo.setRandKey(rondomKey);
-            redisTemplate.opsForList().leftPushAll(SKU_INFO_KEY_PREFIX + taskId, skuTo);
+            redisTemplate.opsForHash().put(SKU_INFO_KEY_PREFIX + taskId,skuTo.getId()+"",skuTo);
             return skuTo;
         }).collect(Collectors.toList());
 

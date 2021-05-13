@@ -3,12 +3,12 @@ package com.imnoob.shopmallorder.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.imnoob.shopmallcommon.exception.BizCodeEnume;
 import com.imnoob.shopmallcommon.exception.CustomizeException;
 import com.imnoob.shopmallcommon.utils.AjaxResult;
 import com.imnoob.shopmallcommon.utils.R;
-import com.imnoob.shopmallcommon.vo.rabbitVo.OrderVo;
+import com.imnoob.shopmallcommon.vo.rabbitTo.KillOrderTo;
+import com.imnoob.shopmallcommon.vo.rabbitTo.OrderTo;
 import com.imnoob.shopmallorder.fegin.ProductFeign;
 import com.imnoob.shopmallorder.fegin.WareFeign;
 import com.imnoob.shopmallorder.mapper.OrderItemMapper;
@@ -97,13 +97,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         buildorderItems(order,orderinfo);
 
         //发送消息
-        OrderVo orderVo = new OrderVo();
-        orderVo.setCreateTime(order.getCreateTime());
-        orderVo.setId(order.getId());
-        orderVo.setStatus(order.getStatus());
-        orderVo.setOrderSn(order.getOrderSn());
+        OrderTo orderTo = new OrderTo();
+        orderTo.setCreateTime(order.getCreateTime());
+        orderTo.setId(order.getId());
+        orderTo.setStatus(order.getStatus());
+        orderTo.setOrderSn(order.getOrderSn());
         try {
-            rabbitTemplate.convertAndSend("order-event-exchange","order.delay.route",orderVo);
+            rabbitTemplate.convertAndSend("order-event-exchange","order.delay.route", orderTo);
         } catch (AmqpException e) {
             //消息发送失败 做好日志记录
             e.printStackTrace();
@@ -111,6 +111,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         return order;
 
+    }
+
+    //为秒杀 商品构建订单
+    @Transactional
+    @Override
+    public Order createOrder(KillOrderTo killOrderTo) {
+
+        //构造订单
+        Order order = new Order();
+        order.setOrderSn(killOrderTo.getOrderSn());
+        order.setMemberId(killOrderTo.getMemberId());
+        order.setCreateTime(new java.util.Date(System.currentTimeMillis()));
+        order.setTotalAmount(killOrderTo.getKillPrice().multiply(new BigDecimal(killOrderTo.getNum())));
+
+
+        //....其他属性赋值 忽略
+        orderMapper.insert(order);
+        buildorderItems(killOrderTo);
+        return order;
+
+    }
+    @Transactional
+    public List<OrderItem> buildorderItems(KillOrderTo killOrderTo) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setSkuId(killOrderTo.getSkuId());
+        orderItem.setSkuPrice(killOrderTo.getKillPrice());
+        orderItem.setSkuQuantity(killOrderTo.getNum());
+        orderItem.setSkuName(killOrderTo.getSkuName());
+
+        ArrayList<OrderItem> res = new ArrayList<>();
+        res.add(orderItem);
+        return res;
     }
 
     //创建每一个商品的 明细
