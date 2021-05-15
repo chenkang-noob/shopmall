@@ -3,7 +3,10 @@ package com.imnoob.shopmallorder.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.ClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -13,8 +16,9 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Configuration
-public class RabbitConfig {
+public class RabbitConfig implements RabbitTemplate.ConfirmCallback,RabbitTemplate.ReturnCallback {
 
     @Bean
     public MessageConverter messageConverter(){
@@ -88,5 +92,18 @@ public class RabbitConfig {
     }
 
 
+    @Override
+    public void confirm(CorrelationData correlationData, boolean b, String s) {
+        log.info("消息发送失败原因：" + s);
+        log.info("消息唯一标识：{}",correlationData);
+    }
 
+    @Override
+    public void returnedMessage(Message message, int i, String s, String s1, String s2) {
+        log.info("消息主体: {}", message);
+        log.info("回复编码: {}", i);
+        log.info("回复内容: {}", s);
+        log.info("交换器: {}", s1);
+        log.info("路由键: {}", s2);
+    }
 }

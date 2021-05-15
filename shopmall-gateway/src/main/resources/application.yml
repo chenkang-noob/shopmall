@@ -33,6 +33,20 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
+        - id: member_route
+          uri: lb://shopmall-member
+          predicates:
+            - Path=/api/member/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        - id: kill_route
+          uri: lb://shopmall-kill
+          predicates:
+            - Path=/api/kill/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
