@@ -62,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
                    System.out.println("方法执行完毕 : "+token);
                    redisTemplate.opsForValue().set(categeoryKey,level1,24, TimeUnit.HOURS);
                }finally {
-                   System.out.println("锁删除成功UUID : "+token);
+
                    //TODO lua脚本 原子性释放锁
                     String script = "if redis.call(\"get\",KEYS[1]) == ARGV[1] then return redis.call(\"del\",KEYS[1]) else return 0 end";
                    redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList(categeoryLockKey), token);

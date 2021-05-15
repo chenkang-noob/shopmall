@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface AuthFegin {
 
     @PostMapping("/auth/checkToken")
-    public AjaxResult checkToken(@RequestBody String token);
+    AjaxResult checkToken(@RequestBody String token);
 
 }

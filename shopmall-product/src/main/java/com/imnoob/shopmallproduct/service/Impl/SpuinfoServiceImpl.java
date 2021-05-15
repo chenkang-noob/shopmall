@@ -95,7 +95,6 @@ public class SpuinfoServiceImpl implements SpuinfoService {
         }).collect(Collectors.toList());
 
         //TODO 接口幂等性 异常处理
-        //skuEsModels
         return searchFeign.upgoods(skuEsModels);
     }
 

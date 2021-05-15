@@ -3,10 +3,7 @@ package com.imnoob.shopmallauth.service.Impl;
 import com.imnoob.shopmallauth.service.TokenService;
 import com.imnoob.shopmallcommon.to.AdminToken;
 import com.sun.org.apache.xpath.internal.operations.Bool;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -63,11 +60,18 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public AdminToken parseToken(String token) {
-        Claims claims = Jwts.parser()  //得到DefaultJwtParser
-                .setSigningKey(secret)         //设置签名的秘钥
-                .parseClaimsJws(token).getBody();//设置需要解析的jwt
-        AdminToken username = (AdminToken) claims.get("admin");
-        return username;
+       try {
+           Claims claims = Jwts.parser()  //得到DefaultJwtParser
+                   .setSigningKey(secret)         //设置签名的秘钥
+                   .parseClaimsJws(token).getBody();//设置需要解析的jwt
+           Object username =  claims.get("admin");
+           if (username instanceof AdminToken){
+               return (AdminToken) username;
+           }else return null;
+       }catch (SignatureException e){
+           return null;
+       }
+
     }
 
     @Override

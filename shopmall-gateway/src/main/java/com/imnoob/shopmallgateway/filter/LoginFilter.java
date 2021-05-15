@@ -13,6 +13,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -39,10 +40,12 @@ public class LoginFilter implements GlobalFilter, Ordered {
 
         String path = exchange.getRequest().getURI().getPath();
         System.out.println(path);
-        String token = exchange.getRequest().getQueryParams().getFirst("access-token");
 
+        HttpHeaders headers = exchange.getRequest().getHeaders();
+        String token = headers.getFirst("access_token");
 
-        if (true) return chain.filter(exchange); //继续向下执行
+//匹配  无需令牌的路径
+        if (containpath(whiteURL.getWhitepath(),path)) return chain.filter(exchange); //继续向下执行
 
         //2.判断是否存在
         if(token == null) {
@@ -57,8 +60,14 @@ public class LoginFilter implements GlobalFilter, Ordered {
         AjaxResult res = authFegin.checkToken(token);
         if (res.getCode() == HttpStatus.OK.value())
             return chain.filter(exchange); //继续向下执行
-        else
-           return exchange.getResponse().setComplete(); //请求结束
+        else{
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            String str = JSONObject.toJSONString(R.error("非法令牌"));
+            byte[] bits = str.getBytes(StandardCharsets.UTF_8);
+            DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(bits);
+            return exchange.getResponse().writeWith(Mono.just(buffer)); //请求结束
+        }
+
     }
 
     @Override

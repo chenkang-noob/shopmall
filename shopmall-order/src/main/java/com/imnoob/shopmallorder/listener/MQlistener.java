@@ -41,7 +41,6 @@ public class MQlistener {
             if  (order.getStatus() == 1){
                 System.out.println("超时未支付");
                 order.setStatus(3);
-                //TODO 幂等修改状态
                 Integer integer = orderService.expiredOrder(order.getOrderSn());
             }
             OrderTo tmp = new OrderTo();

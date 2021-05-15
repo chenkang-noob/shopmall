@@ -59,13 +59,10 @@ public class OrderController {
     public R createOrder(Long memberId,Long[] skuids){
         OrderConfirmVo orderInfo = orderConfirmService.getOrderInfo(memberId, skuids);
 
-//        TODO token解决幂等性
         String token = UUID.randomUUID().toString().replace("-", "");
         orderInfo.setOrderToken(token);
-        redisTemplate.opsForValue().set(ORDER_TOKEN_PREFIX+memberId,token,30, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(ORDER_TOKEN_PREFIX+token,memberId,30, TimeUnit.MINUTES);
 
-        Object str = redisTemplate.opsForValue().get(ORDER_TOKEN_PREFIX + memberId);
-        System.out.println("Key: " +ORDER_TOKEN_PREFIX + memberId+"token : " + str);
 
         //查询对应商品库存库存
         List<SkuStockVo> skuStockVos = wareFeign.gethasStock(Arrays.asList(skuids));
@@ -77,19 +74,17 @@ public class OrderController {
 
     @PostMapping("/createOrder")
     public R createOrder(Long memberId,@RequestBody OrderConfirmVo orderConfirmVo){
-        String key = ORDER_TOKEN_PREFIX+memberId;
+
         String token = orderConfirmVo.getOrderToken();
+        String key = ORDER_TOKEN_PREFIX+token;
         String luaScript = "if redis.call ('get',KEYS[1]) == ARGV[1] " +
                                 "then return redis.call('del',KEYS[1]) " +
                             "else return 0 end";
-
-        Long res = redisTemplate.execute(new DefaultRedisScript<Long>(luaScript, Long.class), Arrays.asList(key), token);
+        Long res = redisTemplate.execute(new DefaultRedisScript<Long>(luaScript, Long.class), Arrays.asList(key), memberId);
         Order order = null;
         if (res == 0){
-            //验证失败 重复提交  或则长时间为确认提交订单
             return R.error("请勿重复订单提交");
         }else{
-        //创建订单
             order = orderService.createOrder(memberId, orderConfirmVo);
         }
 

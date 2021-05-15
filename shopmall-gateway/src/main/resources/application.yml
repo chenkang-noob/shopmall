@@ -52,5 +52,5 @@ gatewayfilter:
     - /api/auth/login
     - /api/auth/register
     - /api/auth/sendSms
-    - /api/product/category/list/tree
+   # - /api/product/category/list/tree
     - /api/spuinfo
