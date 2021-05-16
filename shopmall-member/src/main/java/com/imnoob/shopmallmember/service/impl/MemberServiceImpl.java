@@ -9,12 +9,13 @@ import com.imnoob.shopmallmember.model.Member;
 import com.imnoob.shopmallmember.mapper.MemberMapper;
 import com.imnoob.shopmallmember.service.MemberService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.Date;
-import java.util.List;
+
 import java.util.UUID;
 
 /**
@@ -49,6 +50,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         member.setUsername(registerVo.getPhone());
         member.setCreateTime(new Date(System.currentTimeMillis()));
         member.setNickname("用户"+ UUID.randomUUID().toString().substring(0,10));
+
         //MD5设置密码
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -72,7 +74,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         members.setPassword(null);
 
         //token 操作
-        
         return members;
     }
 }
